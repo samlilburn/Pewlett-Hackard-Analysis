@@ -8,6 +8,7 @@ This SQL analysis is conducted to future-proof a hypothetical company, Pewlett H
 Our **Unique Titles** table, see below, offers several important insights. 
 
 **Unique Titles**
+
 ![unique_titles.png](Images/unique_titles.png)
 
 *This table holds all the titles of employees who were born between January 1, 1952 and December 31, 1955, and shows how many employees holding each title are current employed at Pewlett Hackard.
