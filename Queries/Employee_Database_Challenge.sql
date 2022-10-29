@@ -1,68 +1,101 @@
 -- Deliverable 1
 
-SELECT employees.emp_no,
-	employees.first_name,
-    employees.last_name,
-	titles.title,
-    titles.from_date,
-    titles.to_date
-INTO retirement_titles
-FROM employees
-LEFT JOIN titles
-ON employees.emp_no = titles.emp_no
-WHERE employees.birth_date BETWEEN '1952-01-01' AND '1955-12-31'
-ORDER BY employees.emp_no
-SELECT * FROM retirement_titles
+SELECT ce.emp_no,
+  ce.first_name,
+  ce.last_name,
+  ti.title,
+  ti.from_date,
+  ti.to_date
+INTO ret_titles
+FROM employees AS ce
+  INNER JOIN titles AS ti
+    ON (ce.emp_no = ti.emp_no)
+WHERE birth_date BETWEEN '1952-01-01' AND '1955-12-31'
+ORDER BY ce.emp_no;
+
+
 
 -- Use Dictinct with Orderby to remove duplicate rows
-SELECT DISTINCT ON (retirement_titles.emp_no) retirement_titles.emp_no,
-	retirement_titles.first_name,
-    retirement_titles.last_name,
-	retirement_titles.title
+SELECT DISTINCT ON (emp_no) emp_no, first_name, last_name, title
 INTO unique_titles
-FROM retirement_titles
-ORDER BY retirement_titles.emp_no, retirement_titles.to_date DESC;
-SELECT * FROM unique_titles
+FROM ret_titles
+WHERE to_date = ('9999-01-01')
+ORDER BY emp_no ASC;
 
 
-SELECT title, COUNT(*)
+
+
+SELECT COUNT(title), title
 INTO retiring_titles
 FROM unique_titles
 GROUP BY title
-ORDER BY 2 DESC
-SELECT * FROM retiring_titles
+ORDER BY count DESC;
+
 
 -- Deliverable 2
-
-SELECT DISTINCT ON (employees.emp_no) employees.emp_no,
-	employees.first_name,
-	employees.last_name,
-	employees.birth_date,
-	dept_emp.from_date,
-	dept_emp.to_date,
-	titles.title
+DROP TABLE mentorship_eligibility
+SELECT DISTINCT ON(e.emp_no)e.emp_no,
+	e.first_name,
+	e.last_name,
+	e.birth_date,
+	de.from_date,
+	de.to_date,
+	t.title
 INTO mentorship_eligibility
-FROM employees
-LEFT JOIN dept_emp
-ON employees.emp_no = dept_emp.emp_no
-LEFT JOIN titles
-ON titles.emp_no = employees.emp_no
-WHERE employees.birth_date BETWEEN '1965-01-01' AND '1965-12-31'
-ORDER BY employees.emp_no
-SELECT * FROM mentorship_eligibility
+FROM employees AS e
+	INNER JOIN dept_emp AS de
+		ON (e.emp_no = de.emp_no)
+			INNER JOIN titles AS t
+				ON (e.emp_no = t.emp_no)
+WHERE (e.birth_date BETWEEN '1965-01-01' AND '1965-12-31')
+AND (de.to_date = '9999-01-01')
+ORDER BY emp_no;
 
--- Count of total employees (for deliverable 3)
-SELECT DISTINCT ON (employees.emp_no) employees.emp_no,
-    employees.first_name,
-    employees.last_name,
-    titles.title,
-    titles.from_date,
-    titles.to_date
-INTO all_employees
-FROM employees
-LEFT JOIN titles
-ON employees.emp_no = titles.emp_no
-ORDER BY employees.emp_no, titles.to_date DESC
 
-SELECT COUNT (emp_no)
-FROM all_employees
+
+
+
+-- Count of total active employees (for deliverable 3)
+DROP TABLE active_employees
+SELECT ce.emp_no,
+  ce.first_name,
+  ce.last_name,
+  ti.title,
+  ti.from_date,
+  ti.to_date
+INTO employees_count
+FROM employees AS ce
+  INNER JOIN titles AS ti
+    ON (ce.emp_no = ti.emp_no)
+WHERE birth_date BETWEEN '1500-01-01' AND '2022-12-31'
+ORDER BY ce.emp_no;
+
+
+SELECT DISTINCT ON (emp_no) emp_no, first_name, last_name, title
+INTO active_employees
+FROM employees_count
+WHERE to_date = ('9999-01-01')
+ORDER BY emp_no ASC;
+
+
+-- Expanded mentorship elegibility (for deliverable 3)
+DROP TABLE exp_ment_elg
+SELECT ce.emp_no,
+  ce.first_name,
+  ce.last_name,
+  ti.title,
+  ti.from_date,
+  ti.to_date
+INTO exp_ment_elg
+FROM employees AS ce
+  INNER JOIN titles AS ti
+    ON (ce.emp_no = ti.emp_no)
+WHERE birth_date BETWEEN '1956-01-01' AND '1965-12-31'
+ORDER BY ce.emp_no;
+
+SELECT DISTINCT ON (emp_no) emp_no, first_name, last_name, title
+INTO active_elg_mentors
+FROM exp_ment_elg
+WHERE to_date = ('9999-01-01')
+ORDER BY emp_no ASC;
+
